@@ -36,10 +36,14 @@ describe "User pages" do
 
 				it { should have_selector('title', text: 'Sign up') }
 				it { should have_content('error') }
+				it { should have_selector('li', text: "Password can't be blank") }
+				# it { should_not have_selector('li', text: "digest") }
 				it { should have_selector('li', text: "Name can't be blank") }
 				it { should have_selector('li', text: "Email can't be blank") }
 				it { should have_selector('li', text: "Email is invalid") }
-				it { should have_selector('li', text: "Password is too short") }
+				it { should have_selector('li', text: "Password can't be blank") }
+				it { should have_selector('li', text: "Password is too short (minimum is 6 characters)") }
+				it { should have_selector('li', text: "Password confirmation can't be blank") }
 			end
 		end
 
@@ -55,8 +59,13 @@ describe "User pages" do
 				expect { click_button submit }.to change(User, :count).by(1)
 			end
 
-			describe "Profile page" do
-				it { should have_content('Welcome to the Sample App!') }
+			describe "after saving the user" do
+				before { click_button submit }
+				let(:user) { User.find_by_email('user@example.com') }
+
+				it { should have_selector('title', text: user.name) }
+				it { should have_selector('div.alert.alert-success', text: 'Welcome')}
+				it { should have_link('Sign out') }
 			end
 		end
 	end
